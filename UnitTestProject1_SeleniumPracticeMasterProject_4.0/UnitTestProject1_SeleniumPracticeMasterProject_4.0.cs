@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using AventStack.ExtentReports;
+using AventStack.ExtentReports.Reporter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System;
@@ -10,6 +12,9 @@ namespace UnitTestProject1_SeleniumPracticeMasterProject_4._0
     public class UnitTestProject1_PracticeMasterProjects
     {
         public static IWebDriver _driver;
+        public static ExtentReports _EReport;
+        public static ExtentTest Test;
+
 
         //public object ScreenshotImageFormate { get; private set; }
 
@@ -24,12 +29,18 @@ namespace UnitTestProject1_SeleniumPracticeMasterProject_4._0
         //{
         //    var screenshotPath= @"D:\ExtentReports\screenshot_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".png";
         //}
-
-       
+        public void CreateExtentReport(string _reportpaht)
+        {
+             //CaptrureScreenshots("test_screenshot.png");
+            _EReport = new ExtentReports();
+            _reportpaht = @"D:\ExtentReports\ExtentReport_Log" + DateTime.Now.ToString("yyyyymmdd_hhmmss") + ".html";
+            var sparkreport = new ExtentSparkReporter(_reportpaht);
+            _EReport.AttachReporter(sparkreport);    
+        }       
         public void CaptrureScreenshots(string _fileName)
         {
-            try
-            {
+            //try
+            //{
                 //var ScreenshotImageFormat;
                 // Cast the driver to ITakesScreenshot
                 ITakesScreenshot screenshotDriver = (ITakesScreenshot)_driver;
@@ -45,35 +56,41 @@ namespace UnitTestProject1_SeleniumPracticeMasterProject_4._0
                 // Save the screenshot to the specified location
                 screenshot.SaveAsFile(screenshotPath);
 
-                Console.WriteLine("Screenshot saved at: " + screenshotPath);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error taking screenshot: " + e.Message);
-            }
+                //Console.WriteLine("Screenshot saved at: " + screenshotPath);
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine("Error taking screenshot: " + e.Message);
+            //}
         }
         [TestMethod]
         public void TestMethod()
         {
-            try
-            {
+            //try
+            //{
                 SeleniumInit();
                 // Open a website for testing
                 _driver.Navigate().GoToUrl("https://www.example.com");
+                string screenshotPath = null;
+            // Take a screenshot after performing some actions
+           
+                //CaptrureScreenshots("test_screenshot.png");
+                Test.AddScreenCaptureFromPath(screenshotPath);
+                //string reportpaht = null;
+                //CreateExtentReport(reportpaht);
 
-                // Take a screenshot after performing some actions
-                CaptrureScreenshots("test_screenshot.png");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Test failed: " + ex.Message);
-                CaptrureScreenshots("error_screenshot.png");
-            }
-            finally
-            {
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine("Test failed: " + ex.Message);
+            //    CaptrureScreenshots("error_screenshot.png");
+                
+            //}
+            //finally
+            //{
                 // Close the browser
                 _driver.Quit();
-            }
+            //}
         }
         [TestMethod]
         public static void TestExecution()
@@ -81,6 +98,8 @@ namespace UnitTestProject1_SeleniumPracticeMasterProject_4._0
             UnitTestProject1_PracticeMasterProjects test = new UnitTestProject1_PracticeMasterProjects();
             test.SeleniumInit();
             test.TestMethod();
+            test.CaptrureScreenshots("test_screenshot.png");
+            test.CreateExtentReport("_reportpaht");
         }
     }
 }
