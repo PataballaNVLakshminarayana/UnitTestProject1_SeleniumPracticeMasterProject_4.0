@@ -1,10 +1,13 @@
 ﻿using AventStack.ExtentReports;
+using AventStack.ExtentReports.Model;
 using AventStack.ExtentReports.Reporter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System;
 using System.IO;
+using System.Reactive;
+using System.Threading;
 
 namespace UnitTestProject1_SeleniumPracticeMasterProject_4._0
 {
@@ -12,94 +15,45 @@ namespace UnitTestProject1_SeleniumPracticeMasterProject_4._0
     public class UnitTestProject1_PracticeMasterProjects
     {
         public static IWebDriver _driver;
-        public static ExtentReports _EReport;
-        public static ExtentTest Test;
-
-
-        //public object ScreenshotImageFormate { get; private set; }
-
+        public static ExtentReports _EReports;
+        public static TestContext instance;
+        public static ExtentTest _test;
+        public TestContext TestContext
+        {
+            set { instance = value; }
+            get { return instance; }
+        }
+        public void CreateExtentReport()
+        {
+            //var htmlereporter = new ExtentHtmlReporter();
+            _EReports = new ExtentReports();
+          string  RerportPath = @"D:\ExtentReports\" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".html";
+            var SparkReporter = new ExtentSparkReporter(RerportPath);
+            _EReports.AttachReporter(SparkReporter);
+            _test=_EReports.CreateTest(TestContext.TestName);
+            _EReports.Flush();
+        }
+        public void CaptureScreenshot(string fileName)
+        {
+            ITakesScreenshot _Screenshot = (ITakesScreenshot)_driver;
+            Screenshot CapturedScreenshot = _Screenshot.GetScreenshot();
+            string ScreenshotPath = @"D:\ExtentReports\" + fileName + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".png";
+            CapturedScreenshot.SaveAsFile(ScreenshotPath);
+        }
+        [TestMethod]
         public void SeleniumInit()
         {
             _driver = new ChromeDriver();
-            //_driver = chromedriver;
-            //return _driver;
+            _driver.Navigate().GoToUrl("https://adactinhotelapp.com/");
+            _driver.Manage().Window.Maximize();
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-        }
-        //public void GetScreenshotFileName()
-        //{
-        //    var screenshotPath= @"D:\ExtentReports\screenshot_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".png";
-        //}
-        public void CreateExtentReport(string _reportpaht)
-        {
-             //CaptrureScreenshots("test_screenshot.png");
-            _EReport = new ExtentReports();
-            _reportpaht = @"D:\ExtentReports\ExtentReport_Log" + DateTime.Now.ToString("yyyyymmdd_hhmmss") + ".html";
-            var sparkreport = new ExtentSparkReporter(_reportpaht);
-            _EReport.AttachReporter(sparkreport);    
-        }       
-        public void CaptrureScreenshots(string _fileName)
-        {
-            //try
-            //{
-                //var ScreenshotImageFormat;
-                // Cast the driver to ITakesScreenshot
-                ITakesScreenshot screenshotDriver = (ITakesScreenshot)_driver;
-
-                // Capture the screenshot
-                Screenshot screenshot = screenshotDriver.GetScreenshot();
-
-                // Define the path where the screenshot will be saved
-                //string screenshotPath = Path.Combine(Directory.GetCurrentDirectory(), _fileName);
-                string screenshotPath = @"D:\ExtentReports\screenshot_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".png";
-
-                //object ScreenshotImageFormat = null;
-                // Save the screenshot to the specified location
-                screenshot.SaveAsFile(screenshotPath);
-
-                //Console.WriteLine("Screenshot saved at: " + screenshotPath);
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine("Error taking screenshot: " + e.Message);
-            //}
-        }
-        [TestMethod]
-        public void TestMethod()
-        {
-            //try
-            //{
-                SeleniumInit();
-                // Open a website for testing
-                _driver.Navigate().GoToUrl("https://www.example.com");
-                string screenshotPath = null;
-            // Take a screenshot after performing some actions
-           
-                //CaptrureScreenshots("test_screenshot.png");
-                Test.AddScreenCaptureFromPath(screenshotPath);
-                //string reportpaht = null;
-                //CreateExtentReport(reportpaht);
-
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine("Test failed: " + ex.Message);
-            //    CaptrureScreenshots("error_screenshot.png");
-                
-            //}
-            //finally
-            //{
-                // Close the browser
-                _driver.Quit();
-            //}
-        }
-        [TestMethod]
-        public static void TestExecution()
-        {
-            UnitTestProject1_PracticeMasterProjects test = new UnitTestProject1_PracticeMasterProjects();
-            test.SeleniumInit();
-            test.TestMethod();
-            test.CaptrureScreenshots("test_screenshot.png");
-            test.CreateExtentReport("_reportpaht");
+            _driver.FindElement(By.Id("username")).SendKeys("nagalakshmin");
+            _driver.FindElement(By.Id("password")).SendKeys("l@kshmin");
+            _driver.FindElement(By.Id("login")).Click();
+            CreateExtentReport();
+            CaptureScreenshot("SeleniumPracticeMasterProject_4.0");
+            Thread.Sleep(10000);
+            _driver.Close();
         }
     }
 }
