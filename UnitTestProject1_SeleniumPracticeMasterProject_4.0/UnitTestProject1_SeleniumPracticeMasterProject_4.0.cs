@@ -27,7 +27,7 @@ namespace UnitTestProject1_SeleniumPracticeMasterProject_4._0
         {
             //var htmlereporter = new ExtentHtmlReporter();
             _EReports = new ExtentReports();
-          string  RerportPath = @"D:\ExtentReports\" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".html";
+            string  RerportPath = @"D:\ExtentReports\" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".html";
             var SparkReporter = new ExtentSparkReporter(RerportPath);
             _EReports.AttachReporter(SparkReporter);
             _test=_EReports.CreateTest(TestContext.TestName);
